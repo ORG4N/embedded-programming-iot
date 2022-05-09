@@ -17,6 +17,9 @@
 #include <cstring>
 #include <string.h>
 
+#include "sensors.h"
+using namespace sensors;
+
 /**
  * This example sends and receives messages to and from Azure IoT Hub.
  * The API usages are based on Azure SDK's official iothub_convenience_sample.
@@ -114,7 +117,7 @@ static int on_method_callback(const char* method_name, const unsigned char* payl
     return status;
 }
 
-void azureDemo() {
+void azure(Sensor s) {
     bool trace_on = MBED_CONF_APP_IOTHUB_CLIENT_TRACE;
     tickcounter_ms_t interval = 100;
     IOTHUB_CLIENT_RESULT res;
@@ -192,9 +195,12 @@ void azureDemo() {
             }
 
         */
-        double light = (float) i;
-        double temp  = (float)36.0f-0.1*(float)i;
-        sprintf(message, "{ \"LightLevel\" : %5.2f, \"Temperature\" : %5.2f }", light, temp);
+
+        float light = s.getLighting();
+        float temperature = s.getTemperature();
+        float pressure = s.getPressure();
+
+        sprintf(message, "{ \"LightLevel\" : %5.2f, \"Temperature\" : %5.2f, \"Pressure\" : %5.2f }", light, temperature, pressure);
         LogInfo("Sending: \"%s\"", message);
 
         message_handle = IoTHubMessage_CreateFromString(message);
